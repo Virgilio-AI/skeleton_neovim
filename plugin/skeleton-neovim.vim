@@ -8,10 +8,10 @@
 
 " ------------------------------------------------------------------------------
 " Exit when your app has already been loaded (or "compatible" mode set)
-if exists("g:loaded_leet_code") || &cp
+if exists("g:loaded_skeleton") || &cp
   finish
 endif
-let g:loaded_leet_code= 1 " your version number
+let g:loaded_skeleton= 1 " your version number
 let s:keepcpo           = &cpo
 set cpo&vim
 
@@ -22,50 +22,9 @@ set cpo&vim
 "   map <unique> <F11> <Plug>AppFunction
 " endif
 
-" for compile and run file, std input or custom files
-if !hasmapto('<Plug>CompileAndRun')
-  map <unique> <F11> <Plug>TestLeetcode
-endif
-
-" for compile and run file, input from custom files
-if !hasmapto('<Plug>CompileAndRunInput')
-  map <unique> <F3> <Plug>ExecuteLeetcode
-endif
-
-
-
-
-
-
 " Global Maps:
-"
-" Example:
-"
-" noremap <silent> <unique> <script> <Plug>AppFunction
-"  \ :call <SID>AppFunction()<CR>
 
-
-" noremap <silent> <unique> <script> <Plug>TestLeetcode
-"  \ :call <SID>TestLeetcode()<CR>
-" 
-" noremap <silent> <unique> <script> <Plug>ExecuteLeetcode
-"  \ :call <SID>ExecuteLeetcode()<CR>
-" 
-" 
-" noremap <silent> <unique> <script> <Plug>EnterLeetcode
-" \ :call <SID>EnterLeetcode()<CR>
-
-
-command LeetcodeEnter :call <SID>LeetcodeEnter()
-command LeetcodeExecute :call <SID>LeetcodeExecute()
-command LeetcodeTest :call <SID>LeetcodeTest()
-
-
-
-
-
-
-
+command! -nargs=1 ExpandSkeleton call <SID>ExpandSkeleton(<f-args>)
 
 " ------------------------------------------------------------------------------
 " Global Functions: here are the global functions that will call all the other
@@ -76,43 +35,13 @@ command LeetcodeTest :call <SID>LeetcodeTest()
 "   call s:InternalAppFunction()
 " endfun
 
-
-
-fun! s:LeetcodeEnter()
-	" format the buffer
-	:normal ggVG=
-	"new buffer
-	split
-	execute "normal! \<C-w>j"
-	" create the terminal
-	:Tnew
-	" return to the original
-	execute "normal! \<C-w>k"
-	:res +15
-endfun
-
-
-
-fun! s:LeetcodeTest()
-	:w
-	Tclear
-	let l:filename=expand('%')
-	let l:number = split(l:filename,'\.')[0]
-	execute "T ~/.cargo/bin/leetcode test " . l:number
-endfun
-
-fun! s:LeetcodeExecute()
-	:w
-	Tclear
-	let l:filename=expand('%')
-	let l:number = split(l:filename,'\.')[0]
-	execute "T ~/.cargo/bin/leetcode exec " . l:number
-endfun
-
-
-
-
-
+function! s:ExpandSkeleton(sni)
+	let filename = expand('%')
+	if (!filereadable(filename) || getfsize ( expand('%'))==0 ) && getline('$') == '' && line('$') == 1
+		:execute "normal! i" . a:sni ."\<C-r>=UltiSnips#ExpandSnippet()\<CR>"
+		:startinsert!
+	endif
+endfunction
 
 " ------------------------------------------------------------------------------
 " Internal Functions: these are the internal functions that cannot be accesed
@@ -121,8 +50,6 @@ endfun
 " fun! s:InternalAppFunction()
 " 	echo "calling the internal app function"
 " endfun
-
-
 
 " ------------------------------------------------------------------------------
 let &cpo= s:keepcpo
