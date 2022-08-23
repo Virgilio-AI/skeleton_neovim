@@ -3,7 +3,7 @@ This is a repository for having skeletons in neovim
 
 # demo
 
-![](demo.gif)
+![](demo_skeleton.gif)
 
 # requirements
  This vim plugin comes packages with water linux
